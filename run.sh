@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-systemctl enable taiga
-service start taiga
-systemctl enable postgresql
-systemctl start postgresql
-systemctl enable rabbitmq-server
-systemctl start rabbitmq-server
+service taiga enable
+service taiga start
+service postgresql enable
+service postgresql start
+service rabbitmq-server enable
+service rabbitmq-server start

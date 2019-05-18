@@ -59,8 +59,7 @@ RUN cd /home/taiga && git clone https://github.com/taigaio/taiga-front-dist.git 
 COPY run.sh /start.sh
 COPY --chown=taiga local.py /home/taiga/taiga-back/settings/local.py
 COPY --chown=taiga conf.json /home/taiga/taiga-front-dist/conf.json
-COPY taiga.service /etc/systemd/system/taiga.service
-RUN apt-get update && apt-get install --reinstall systemd
+COPY taiga.service /etc/init.d/taiga.service
 RUN service postgresql start && cd /home/taiga/taiga-back && chown -R taiga /home/taiga && su -c \
 	"python3 /home/taiga/taiga-back/manage.py migrate --noinput && \
 	python3 /home/taiga/taiga-back/manage.py loaddata initial_user && \
