@@ -49,13 +49,25 @@ RUN service rabbitmq-server start && \
 	rabbitmqctl add_vhost taiga && \
 	rabbitmqctl set_permissions -p taiga taiga ".*" ".*" ".*"
 
-# Grab and set up taiga backend
-RUN su taiga && cd /home/taiga && git clone https://github.com/taigaio/taiga-back.git taiga-back && \
+# Grab taiga code
+RUN cd /home/taiga && git clone https://github.com/taigaio/taiga-back.git taiga-back && \
 	cd taiga-back && git checkout stable && pip3 install -r requirements.txt
+RUN cd /home/taiga && git clone https://github.com/taigaio/taiga-front-dist.git taiga-front-dist && \
+	cd taiga-front-dist && git checkout stable
+
+# Set up taiga code
+COPY run.sh /start.sh
+COPY --chown=taiga local.py /home/taiga/taiga-back/settings/local.py
+COPY --chown=taiga conf.json /home/taiga/taiga-front-dist/conf.json
+COPY taiga.service /etc/systemd/system/taiga.service
+RUN apt-get install --reinstall systemd
 RUN service postgresql start && cd /home/taiga/taiga-back && chown -R taiga /home/taiga && su -c \
 	"python3 /home/taiga/taiga-back/manage.py migrate --noinput && \
 	python3 /home/taiga/taiga-back/manage.py loaddata initial_user && \
 	python3 /home/taiga/taiga-back/manage.py loaddata initial_project_templates && \
 	python3 /home/taiga/taiga-back/manage.py compilemessages && \
-	python3 /home/taiga/taiga-back/manage.py collectstatic --noinput" taiga
-COPY --chown=taiga local.py /home/taiga/taiga-back/settings/local.py
+	python3 /home/taiga/taiga-back/manage.py collectstatic --noinput" taiga && \
+	chmod +x /start.sh
+
+EXPOSE 8001
+CMD /start.sh
