@@ -41,9 +41,6 @@ RUN apt-get install -y build-essential binutils-doc autoconf flex bison libjpeg-
 
 # Set up non-taiga services
 RUN adduser taiga && adduser taiga sudo
-RUN mkdir -p $PG_DATA && chown -R postgres:postgres $PG_BASE && su -c "/usr/lib/postgresql/10/bin/initdb -D $PG_DATA" postgres
-RUN service postgresql start && su  -c "createuser taiga && \
-	createdb taiga -O taiga --encoding='utf-8' --locale=en_US.utf8 --template=template0" postgres
 RUN service rabbitmq-server start && \
 	rabbitmqctl add_user taiga ef808c4429e5395e0938967afed15727eaf3bfa68cc40e3165f1f3353f4b2ce9 && \
 	rabbitmqctl add_vhost taiga && \
@@ -56,18 +53,12 @@ RUN cd /home/taiga && git clone https://github.com/taigaio/taiga-front-dist.git 
 	cd taiga-front-dist && git checkout stable
 
 # Set up taiga code
-COPY run.sh /start.sh
+COPY start.sh /start.sh
 COPY --chown=taiga local.py /home/taiga/taiga-back/settings/local.py
 COPY --chown=taiga conf.json /home/taiga/taiga-front-dist/conf.json
-COPY taiga.service /etc/init.d/taiga.service
-RUN ln -s /etc/init/taiga.service /etc/init.d/taiga.service && \
-	service postgresql start && cd /home/taiga/taiga-back && chown -R taiga /home/taiga && su -c \
-	"python3 /home/taiga/taiga-back/manage.py migrate --noinput && \
-	python3 /home/taiga/taiga-back/manage.py loaddata initial_user && \
-	python3 /home/taiga/taiga-back/manage.py loaddata initial_project_templates && \
-	python3 /home/taiga/taiga-back/manage.py compilemessages && \
-	python3 /home/taiga/taiga-back/manage.py collectstatic --noinput" taiga && \
-	chmod +x /start.sh
+RUN chmod +x /start.sh
+
+VOLUME $PG_DATA
 
 EXPOSE 8001
 CMD /start.sh
