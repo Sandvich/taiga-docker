@@ -30,7 +30,7 @@ RUN echo "host all  all    0.0.0.0/0  md5" >> $PG_CONFIG_DIR/pg_hba.conf \
 # Prereqs
 RUN apt-get install -y build-essential binutils-doc autoconf flex bison libjpeg-dev \
 					libfreetype6-dev zlib1g-dev libzmq3-dev libgdbm-dev libncurses5-dev \
-					automake libtool curl git tmux gettext \
+					automake libtool curl git tmux gettext nginx \
 					nginx rabbitmq-server redis-server \
 					python3 python3-pip python3-dev \
 					libxml2-dev libxslt-dev \
@@ -56,6 +56,7 @@ RUN cd /home/taiga && git clone https://github.com/taigaio/taiga-front-dist.git 
 COPY start.sh /start.sh
 COPY --chown=taiga local.py /home/taiga/taiga-back/settings/local.py
 COPY --chown=taiga conf.json /home/taiga/taiga-front-dist/conf.json
+COPY taiga.conf /etc/nginx/sites-enabled/taiga.conf
 RUN chmod +x /start.sh
 
 VOLUME $PG_DATA
