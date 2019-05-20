@@ -19,8 +19,6 @@ if [[ ! -f $PG_DATA/PG_VERSION ]]; then
 	python3 /home/taiga/taiga-back/manage.py loaddata initial_project_templates && \
 	python3 /home/taiga/taiga-back/manage.py compilemessages && \
 	python3 /home/taiga/taiga-back/manage.py collectstatic --noinput" taiga
-
-	ln -s /etc/nginx/sites-available/taiga.conf /etc/nginx/sites-enabled/taiga.conf
 fi
 
 mkdir /home/taiga/logs && chown taiga /home/taiga/logs

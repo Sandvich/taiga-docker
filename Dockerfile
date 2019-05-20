@@ -57,7 +57,7 @@ COPY start.sh /start.sh
 COPY --chown=taiga local.py /home/taiga/taiga-back/settings/local.py
 COPY --chown=taiga conf.json /home/taiga/taiga-front-dist/conf.json
 COPY taiga.conf /etc/nginx/sites-enabled/taiga.conf
-RUN chmod +x /start.sh
+RUN chmod +x /start.sh && ln -s /etc/nginx/sites-enabled/taiga.conf /etc/nginx/sites-available/taiga.conf
 
 VOLUME $PG_DATA
 
