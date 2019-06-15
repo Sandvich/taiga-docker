@@ -15,14 +15,15 @@ if [[ ! -f $PG_DATA/PG_VERSION ]]; then
 	cd /home/taiga/taiga-back
 	chown -R taiga /home/taiga
 	su -c "python3 /home/taiga/taiga-back/manage.py migrate --noinput && \
-	python3 /home/taiga/taiga-back/manage.py loaddata initial_user && \
-	python3 /home/taiga/taiga-back/manage.py loaddata initial_project_templates && \
-	python3 /home/taiga/taiga-back/manage.py compilemessages && \
-	python3 /home/taiga/taiga-back/manage.py collectstatic --noinput" taiga
+           python3 /home/taiga/taiga-back/manage.py loaddata initial_user && \
+           python3 /home/taiga/taiga-back/manage.py loaddata initial_project_templates && \
+           python3 /home/taiga/taiga-back/manage.py compilemessages && \
+           python3 /home/taiga/taiga-back/manage.py collectstatic --noinput" taiga
 fi
 
 mkdir /home/taiga/logs && chown taiga /home/taiga/logs
 service postgresql start
 service rabbitmq-server start
 service nginx start
-su -c "python3 /home/taiga/taiga-back/manage.py runserver" taiga
+su -c "python3 /home/taiga/taiga-back/manage.py migrate --noinput && \
+       python3 /home/taiga/taiga-back/manage.py runserver" taiga
