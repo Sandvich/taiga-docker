@@ -1,5 +1,7 @@
 # Taiga-Docker
 
+EDIT: Not maintained. Will be archived.
+
 A fat container with everything required to run Taiga.  
 Note: This container uses Ubuntu 18.04. Every so often this will need to be updated as old versions get EOLed.
 
